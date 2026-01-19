@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'users',
     'habits',
+    'drf_yasg',
 ]
 
 REST_FRAMEWORK = {
