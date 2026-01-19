@@ -98,9 +98,11 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-LANGUAGE_CODE = 'en-us'
+AUTH_USER_MODEL= 'users.User'
 
-TIME_ZONE = 'UTC'
+LANGUAGE_CODE = 'ru-Ru'
+
+TIME_ZONE = 'Europe/Moscow'
 
 USE_I18N = True
 
