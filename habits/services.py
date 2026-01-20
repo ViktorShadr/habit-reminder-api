@@ -4,6 +4,7 @@ from typing import Dict, List
 from django.utils import timezone
 
 from habits.models import Habit
+from habits.notifications import format_habit_message
 from users.services import telegram_service
 
 logger = logging.getLogger(__name__)
@@ -21,17 +22,16 @@ def get_due_habits(now: timezone.datetime) -> List[Habit]:
     """
     current_time = now.time()
     current_date = now.date()
-    
-    # Получаем все привычки
-    habits = Habit.objects.all()
+
+    # Получаем привычки на текущее время (с точностью до минут)
+    habits = Habit.objects.filter(
+        time__hour=current_time.hour,
+        time__minute=current_time.minute,
+    )
     
     due_habits = []
     
     for habit in habits:
-        # Проверяем, совпадает ли время
-        if habit.time != current_time:
-            continue
-            
         # Проверяем периодичность (frequency - раз в N дней)
         days_since_last_reminder = None
         if habit.last_reminder:
@@ -45,32 +45,6 @@ def get_due_habits(now: timezone.datetime) -> List[Habit]:
             due_habits.append(habit)
     
     return due_habits
-
-
-def format_habit_message(habit: Habit) -> str:
-    """
-    Форматирует сообщение о привычке для отправки в Telegram.
-    
-    Args:
-        habit: Объект привычки
-        
-    Returns:
-        Отформатированное сообщение
-    """
-    message = f"⏰ Напоминание о привычке!\n\n"
-    message += f"📍 Место: {habit.place}\n"
-    message += f"🎯 Действие: {habit.action}\n"
-    message += f"⏱️ Длительность: {habit.duration} секунд\n"
-    
-    if habit.reward:
-        message += f"🎁 Награда: {habit.reward}\n"
-    
-    if habit.related_habit:
-        message += f"🔗 Связанная привычка: {habit.related_habit.action}\n"
-    
-    message += f"\n💪 Не забудь выполнить свою привычку!"
-    
-    return message
 
 
 def send_telegram_notification(telegram_id: str, message: str) -> bool:

@@ -1,8 +1,10 @@
 import logging
-from typing import Dict, Optional
+from typing import Dict
 
 import httpx
 from django.conf import settings
+
+from habits.notifications import format_habit_message
 
 logger = logging.getLogger(__name__)
 
@@ -82,33 +84,8 @@ class TelegramNotificationService:
         Returns:
             True если отправка успешна, False в противном случае
         """
-        message = self._format_habit_message(habit_data)
+        message = format_habit_message(habit_data)
         return self.send_message(telegram_id, message)
-
-    def _format_habit_message(self, habit_data: Dict) -> str:
-        """
-        Форматирует сообщение о привычке.
-        
-        Args:
-            habit_data: Данные о привычке
-            
-        Returns:
-            Отформатированное сообщение
-        """
-        message = f"⏰ Напоминание о привычке!\n\n"
-        message += f"📍 Место: {habit_data.get('place', 'Не указано')}\n"
-        message += f"🎯 Действие: {habit_data.get('action', 'Не указано')}\n"
-        message += f"⏱️ Длительность: {habit_data.get('duration', 60)} секунд\n"
-
-        if habit_data.get('reward'):
-            message += f"🎁 Награда: {habit_data['reward']}\n"
-
-        if habit_data.get('related_habit'):
-            message += f"🔗 Связанная привычка: {habit_data['related_habit']}\n"
-
-        message += f"\n💪 Не забудь выполнить свою привычку!"
-
-        return message
 
 
 # Глобальный экземпляр сервиса

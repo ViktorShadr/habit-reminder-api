@@ -1,11 +1,12 @@
 import logging
-from datetime import timedelta
 
 import httpx
 from celery import shared_task
 from django.utils import timezone
 
 from habits.services import process_due_habits, process_single_habit
+from .models import Habit
+from .services import process_single_habit
 
 logger = logging.getLogger(__name__)
 
@@ -49,15 +50,38 @@ def send_habit_reminders(self) -> dict:
 )
 def send_single_habit_reminder(self, habit_id: int) -> dict:
     """
-    Отправляет напоминание о выполнении привычки.
+    Отправляет напоминание о выполнении привычки и создает следующее напоминание.
     """
-    from .models import Habit
-    from .services import process_single_habit
-
     try:
         habit = Habit.objects.get(id=habit_id)
         now = timezone.now()
-        return process_single_habit(habit.id, now)
+        
+        # Отправляем текущее напоминание
+        stats = process_single_habit(habit.id, now)
+        
+        # Если напоминание успешно отправлено, создаем следующее
+        if stats["sent"] > 0:
+            from .signals import calculate_next_reminder_time
+            
+            # Рассчитываем следующее время напоминания
+            next_reminder_time = calculate_next_reminder_time(habit, now)
+            
+            if next_reminder_time:
+                # Вычисляем задержку до следующего напоминания
+                delay_seconds = (next_reminder_time - now).total_seconds()
+                
+                # Создаем следующую задачу с уникальным ID
+                task_id = f"habit_reminder_{habit.id}_{int(next_reminder_time.timestamp())}"
+                send_single_habit_reminder.apply_async(
+                    args=[habit.id],
+                    countdown=delay_seconds,
+                    task_id=task_id
+                )
+                
+                logger.info(f"Запланировано следующее напоминание для привычки {habit.id} на {next_reminder_time}")
+        
+        return stats
+        
     except Habit.DoesNotExist:
         logger.warning(f"Habit with id {habit_id} not found")
         return {"sent": 0, "skipped": 0, "errors": 1}
