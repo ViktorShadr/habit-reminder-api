@@ -145,3 +145,5 @@ CELERY_BEAT_SCHEDULE = {
         'schedule': timedelta(minutes=1),
     },
 }
+
+TELEGRAM_BOT_SECRET = os.getenv("TELEGRAM_BOT_SECRET")

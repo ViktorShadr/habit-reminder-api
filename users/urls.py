@@ -6,7 +6,9 @@ from users.views import (
     UserCreateAPIView,
     UserRetrieveAPIView,
     UserUpdateAPIView,
-    UserDestroyAPIView,
+    UserDestroyAPIView, 
+    TelegramConfirmAPIView,
+    TelegramLinkCreateAPIView,
 )
 
 app_name = UsersConfig.name
@@ -18,4 +20,6 @@ urlpatterns = [
     path("detail/me/", UserRetrieveAPIView.as_view(), name="user_detail"),
     path("update/me/", UserUpdateAPIView.as_view(), name="user_update"),
     path("delete/me/", UserDestroyAPIView.as_view(), name="user_delete"),
+    path("telegram/link/", TelegramLinkCreateAPIView.as_view(), name="telegram_link"),
+    path("telegram/confirm/", TelegramConfirmAPIView.as_view(), name="telegram_confirm"),
 ]

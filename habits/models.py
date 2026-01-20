@@ -22,6 +22,7 @@ class Habit(models.Model):
     is_public = models.BooleanField(default=False, verbose_name="Публичная привычка")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    last_reminder = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.user} - {self.action}"
