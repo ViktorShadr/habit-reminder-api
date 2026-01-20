@@ -107,3 +107,20 @@ class HabitSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(errors)
 
         return attrs
+
+
+class HabitPublicSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Habit
+        fields = [
+            "id",
+            "place",
+            "time",
+            "action",
+            "is_pleasant",
+            "frequency",
+            "duration",
+            "reward",
+            "related_habit",
+        ]
+
