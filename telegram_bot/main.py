@@ -5,6 +5,9 @@ import asyncio
 import httpx
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters import CommandStart
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
@@ -23,7 +26,7 @@ dp = Dispatcher()
 
 async def confirm_telegram_link(code: str, chat_id: int) -> tuple[bool, str]:
     """Возвращает (ok, message)."""
-    url = f"{BACKEND_BASE_URL}/users/telegram/confirm/"
+    url = f"{BACKEND_BASE_URL}/api/users/telegram/confirm/"
     payload = {"code": code, "chat_id": chat_id}
     headers = {"X-BOT-SECRET": BOT_SECRET}
 

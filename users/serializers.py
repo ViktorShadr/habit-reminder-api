@@ -35,7 +35,6 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class TelegramLinkCreateSerializer(serializers.Serializer):
-    # Это поля ОТВЕТА (read-only). В запросе тело может быть пустым.
     code = serializers.CharField(read_only=True)
     expires_at = serializers.DateTimeField(read_only=True)
     start_command = serializers.CharField(read_only=True)
@@ -44,18 +43,15 @@ class TelegramLinkCreateSerializer(serializers.Serializer):
         request = self.context["request"]
         user = request.user
 
-        # 1) “Гасим” прошлые неиспользованные коды, чтобы был один активный.
         TelegramLink.objects.filter(
             user=user,
             used_at__isnull=True,
             expires_at__gt=timezone.now(),
         ).update(expires_at=timezone.now())
 
-        # 2) Генерим код (без спецсимволов, чтобы удобно вставлять в /start)
         alphabet = string.ascii_uppercase + string.digits
         code = "".join(secrets.choice(alphabet) for _ in range(10))
 
-        # 3) Истекает через 15 минут
         expires_at = timezone.now() + timedelta(minutes=15)
 
         link = TelegramLink.objects.create(
@@ -64,7 +60,6 @@ class TelegramLinkCreateSerializer(serializers.Serializer):
             expires_at=expires_at,
         )
 
-        # 4) Возвращаем “payload” для ответа
         return {
             "code": link.code,
             "expires_at": link.expires_at,
@@ -84,7 +79,6 @@ class TelegramConfirmSerializer(serializers.Serializer):
         code = self.validated_data["code"]
         chat_id = self.validated_data["chat_id"]
 
-        # select_for_update требует транзакцию — сделаем её во view
         link = (
             TelegramLink.objects.select_for_update()
             .select_related("user")
@@ -102,7 +96,7 @@ class TelegramConfirmSerializer(serializers.Serializer):
             raise serializers.ValidationError({"code": "Срок действия кода истёк. Запросите новый код."})
 
         user = link.user
-        user.telegram_chat_id = chat_id
+        user.telegram_id = chat_id
         user.save(update_fields=["telegram_id"])
 
         link.used_at = timezone.now()
