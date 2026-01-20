@@ -48,6 +48,25 @@ async def confirm_telegram_link(code: str, chat_id: int) -> tuple[bool, str]:
     return False, f"Не получилось привязать. {detail}"
 
 
+async def send_notification_to_user(telegram_id: str, message: str) -> bool:
+    """
+    Отправляет сообщение пользователю в Telegram.
+    
+    Args:
+        telegram_id: ID пользователя в Telegram
+        message: Текст сообщения
+        
+    Returns:
+        True если отправка успешна, False в противном случае
+    """
+    try:
+        await bot.send_message(chat_id=telegram_id, text=message)
+        return True
+    except Exception as e:
+        print(f"Ошибка отправки сообщения пользователю {telegram_id}: {e}")
+        return False
+
+
 @dp.message(CommandStart())
 async def cmd_start(message: types.Message):
     # /start <code>

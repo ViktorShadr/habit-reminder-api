@@ -125,8 +125,8 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:8000",
-    "http://127.0.0.1:8000",
+    "http://localhost:8002",
+    "http://127.0.0.1:8002",
 ]
 
 CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL")
@@ -140,10 +140,13 @@ CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 30 * 60
 
 CELERY_BEAT_SCHEDULE = {
-    'task-name': {
-        'task': 'habits.tasks.ping_task',
-        'schedule': timedelta(minutes=1),
+    'send-habit-reminders': {
+        'task': 'habits.tasks.send_habit_reminders',
+        'schedule': timedelta(minutes=1),  # Проверяем каждую минуту
     },
 }
 
 TELEGRAM_BOT_SECRET = os.getenv("TELEGRAM_BOT_SECRET")
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+
+BACKEND_BASE_URL = os.getenv("BACKEND_BASE_URL", "http://127.0.0.1:8002")
