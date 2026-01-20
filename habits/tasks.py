@@ -4,9 +4,7 @@ import httpx
 from celery import shared_task
 from django.utils import timezone
 
-from habits.services import process_due_habits, process_single_habit
-from .models import Habit
-from .services import process_single_habit
+from .services import enqueue_due_habits, process_single_habit
 
 logger = logging.getLogger(__name__)
 
@@ -20,23 +18,23 @@ logger = logging.getLogger(__name__)
 )
 def send_habit_reminders(self) -> dict:
     """
-    Periodic task (celery beat):
-    - calculates current moment
-    - delegates to service layer
-    - returns stats for logs/monitoring
+    Periodic task (celery beat), runs every minute:
+    - finds due habits
+    - enqueues send_single_habit_reminder(habit_id) for each
     """
-    now = timezone.now()
+    now = timezone.localtime(timezone.now())
 
     started_at = timezone.now()
-    stats = process_due_habits(now=now)
+    stats = enqueue_due_habits(now=now)
     elapsed = (timezone.now() - started_at).total_seconds()
 
     logger.info(
-        "Habit reminders run finished: sent=%s skipped=%s errors=%s elapsed=%.2fs",
-        stats["sent"],
-        stats["skipped"],
-        stats["errors"],
+        "Habit reminders tick: enqueued=%s skipped=%s errors=%s elapsed=%.2fs now=%s",
+        stats.get("enqueued", 0),
+        stats.get("skipped", 0),
+        stats.get("errors", 0),
         elapsed,
+        now.isoformat(),
     )
     return stats
 
@@ -50,38 +48,20 @@ def send_habit_reminders(self) -> dict:
 )
 def send_single_habit_reminder(self, habit_id: int) -> dict:
     """
-    Отправляет напоминание о выполнении привычки и создает следующее напоминание.
+    Worker task:
+    - sends ONE reminder for ONE habit
+    - updates last_reminder if sent
+    No scheduling inside.
     """
-    try:
-        habit = Habit.objects.get(id=habit_id)
-        now = timezone.now()
-        
-        # Отправляем текущее напоминание
-        stats = process_single_habit(habit.id, now)
-        
-        # Если напоминание успешно отправлено, создаем следующее
-        if stats["sent"] > 0:
-            from .signals import calculate_next_reminder_time
-            
-            # Рассчитываем следующее время напоминания
-            next_reminder_time = calculate_next_reminder_time(habit, now)
-            
-            if next_reminder_time:
-                # Вычисляем задержку до следующего напоминания
-                delay_seconds = (next_reminder_time - now).total_seconds()
-                
-                # Создаем следующую задачу с уникальным ID
-                task_id = f"habit_reminder_{habit.id}_{int(next_reminder_time.timestamp())}"
-                send_single_habit_reminder.apply_async(
-                    args=[habit.id],
-                    countdown=delay_seconds,
-                    task_id=task_id
-                )
-                
-                logger.info(f"Запланировано следующее напоминание для привычки {habit.id} на {next_reminder_time}")
-        
-        return stats
-        
-    except Habit.DoesNotExist:
-        logger.warning(f"Habit with id {habit_id} not found")
-        return {"sent": 0, "skipped": 0, "errors": 1}
+    now = timezone.localtime(timezone.now())
+    stats = process_single_habit(habit_id=habit_id, now=now)
+
+    # Важно: лог тут помогает понять, что воркер реально "берёт" задачи
+    logger.info(
+        "Habit reminder processed: habit_id=%s sent=%s skipped=%s errors=%s",
+        habit_id,
+        stats.get("sent", 0),
+        stats.get("skipped", 0),
+        stats.get("errors", 0),
+    )
+    return stats

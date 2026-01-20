@@ -12,7 +12,7 @@ async def run_bot():
 
 async def run_api():
     """Запуск API для отправки сообщений."""
-    config = uvicorn.Config(api_app, host="127.0.0.1", port=8002, log_level="info")
+    config = uvicorn.Config(api_app, host="127.0.0.1", port=8001, log_level="info")
     server = uvicorn.Server(config)
     await server.serve()
 
