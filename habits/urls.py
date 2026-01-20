@@ -9,4 +9,3 @@ router = DefaultRouter()
 router.register(r"", HabitViewSet, basename="habits")
 
 urlpatterns = router.urls
-

@@ -15,25 +15,49 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Habit',
+            name="Habit",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('place', models.CharField(max_length=100)),
-                ('time', models.TimeField()),
-                ('action', models.CharField(max_length=100)),
-                ('is_pleasant', models.BooleanField(default=False)),
-                ('frequency', models.PositiveSmallIntegerField(default=1)),
-                ('reward', models.CharField(blank=True, max_length=100, null=True)),
-                ('duration', models.PositiveSmallIntegerField(default=60)),
-                ('is_public', models.BooleanField(default=False)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('related_habit', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='linked_habit', to='habits.habit', verbose_name='Связанная привычка')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("place", models.CharField(max_length=100)),
+                ("time", models.TimeField()),
+                ("action", models.CharField(max_length=100)),
+                ("is_pleasant", models.BooleanField(default=False)),
+                ("frequency", models.PositiveSmallIntegerField(default=1)),
+                ("reward", models.CharField(blank=True, max_length=100, null=True)),
+                ("duration", models.PositiveSmallIntegerField(default=60)),
+                ("is_public", models.BooleanField(default=False)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "related_habit",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="linked_habit",
+                        to="habits.habit",
+                        verbose_name="Связанная привычка",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Привычка',
-                'verbose_name_plural': 'Привычки',
+                "verbose_name": "Привычка",
+                "verbose_name_plural": "Привычки",
             },
         ),
     ]

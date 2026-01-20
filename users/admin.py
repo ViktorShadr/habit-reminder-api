@@ -18,8 +18,22 @@ class CustomUserAdmin(UserAdmin):
     # чтобы в форме редактирования появилось поле Groups
     fieldsets = (
         (None, {"fields": ("email", "password")}),
-        (_("Personal info"), {"fields": ("first_name", "last_name", "phone_number", "city", "avatar")}),
-        (_("Permissions"), {"fields": ("is_active", "is_staff", "is_superuser", "groups", "user_permissions")}),
+        (
+            _("Personal info"),
+            {"fields": ("first_name", "last_name", "phone_number", "city", "avatar")},
+        ),
+        (
+            _("Permissions"),
+            {
+                "fields": (
+                    "is_active",
+                    "is_staff",
+                    "is_superuser",
+                    "groups",
+                    "user_permissions",
+                )
+            },
+        ),
         (_("Important dates"), {"fields": ("last_login", "date_joined")}),
     )
 
@@ -28,7 +42,15 @@ class CustomUserAdmin(UserAdmin):
             None,
             {
                 "classes": ("wide",),
-                "fields": ("email", "password1", "password2", "is_active", "is_staff", "is_superuser", "groups"),
+                "fields": (
+                    "email",
+                    "password1",
+                    "password2",
+                    "is_active",
+                    "is_staff",
+                    "is_superuser",
+                    "groups",
+                ),
             },
         ),
     )
@@ -39,6 +61,3 @@ class CustomUserAdmin(UserAdmin):
         return ", ".join(g.name for g in obj.groups.all())
 
     groups_list.short_description = "Groups"
-
-
-
