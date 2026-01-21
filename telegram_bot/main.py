@@ -11,7 +11,7 @@ load_dotenv()
 
 BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 # Это URL твоего Django (где /api/users/telegram/confirm/)
-BACKEND_BASE_URL = os.getenv("BACKEND_BASE_URL", "http://127.0.0.1:8000")
+BACKEND_BASE_URL = os.getenv("BACKEND_BASE_URL", "http://127.0.0.1:8001")
 BOT_SECRET = os.getenv("TELEGRAM_BOT_SECRET")
 
 if not BOT_TOKEN:

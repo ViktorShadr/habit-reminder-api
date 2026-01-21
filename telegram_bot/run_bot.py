@@ -1,8 +1,9 @@
 import asyncio
+
 import uvicorn
-from fastapi import FastAPI
-from main import dp, bot
+
 from api import app as api_app
+from main import dp, bot
 
 
 async def run_bot():
