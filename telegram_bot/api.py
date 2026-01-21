@@ -43,7 +43,10 @@ async def send_message(
     if success:
         return {"status": "success", "message": "Сообщение отправлено"}
 
-    return {"status": "error", "message": "Ошибка отправки сообщения"}
+    raise HTTPException(
+        status_code=status.HTTP_502_BAD_GATEWAY,
+        detail="Ошибка отправки сообщения",
+    )
 
 
 @app.get("/health/")

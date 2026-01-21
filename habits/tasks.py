@@ -17,11 +17,7 @@ logger = logging.getLogger(__name__)
     max_retries=5,
 )
 def send_habit_reminders(self) -> dict:
-    """
-    Periodic task (celery beat), runs every minute:
-    - finds due habits
-    - enqueues send_single_habit_reminder(habit_id) for each
-    """
+    """Периодическая задача: ищет привычки и ставит задачи в очередь."""
     now = timezone.localtime(timezone.now())
 
     started_at = timezone.now()
@@ -47,16 +43,10 @@ def send_habit_reminders(self) -> dict:
     max_retries=5,
 )
 def send_single_habit_reminder(self, habit_id: int) -> dict:
-    """
-    Worker task:
-    - sends ONE reminder for ONE habit
-    - updates last_reminder if sent
-    No scheduling inside.
-    """
+    """Воркер: отправляет одно напоминание по одной привычке."""
     now = timezone.localtime(timezone.now())
     stats = process_single_habit(habit_id=habit_id, now=now)
 
-    # Важно: лог тут помогает понять, что воркер реально "берёт" задачи
     logger.info(
         "Habit reminder processed: habit_id=%s sent=%s skipped=%s errors=%s",
         habit_id,
