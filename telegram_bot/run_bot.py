@@ -1,9 +1,8 @@
 import asyncio
 
 import uvicorn
-
 from api import app as api_app
-from main import dp, bot
+from main import bot, dp
 
 
 async def run_bot():
@@ -21,10 +20,7 @@ async def run_api():
 async def main():
     """Запуск бота и API одновременно."""
     # Запускаем обе задачи параллельно
-    await asyncio.gather(
-        run_bot(),
-        run_api()
-    )
+    await asyncio.gather(run_bot(), run_api())
 
 
 if __name__ == "__main__":

@@ -1,5 +1,5 @@
-from datetime import datetime, timedelta, timezone as dt_timezone
-from unittest.mock import patch
+from datetime import datetime, timedelta
+from datetime import timezone as dt_timezone
 
 from django.contrib.auth import get_user_model
 from django.test import TestCase

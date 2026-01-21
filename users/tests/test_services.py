@@ -1,4 +1,3 @@
-import logging
 from unittest.mock import Mock, patch
 
 from django.test import TestCase, override_settings
@@ -15,10 +14,7 @@ class TelegramNotificationServiceTests(TestCase):
         self.telegram_id = "123456789"
         self.message = "Тестовое сообщение"
 
-    @override_settings(
-        TELEGRAM_API_BASE_URL="http://test-api.com",
-        TELEGRAM_BOT_SECRET="test-secret"
-    )
+    @override_settings(TELEGRAM_API_BASE_URL="http://test-api.com", TELEGRAM_BOT_SECRET="test-secret")
     def test_init_with_settings(self):
         """Тест инициализации с настройками"""
         service = TelegramNotificationService()
@@ -32,38 +28,26 @@ class TelegramNotificationServiceTests(TestCase):
             self.assertIsNone(service.telegram_api_base_url)
             self.assertIsNone(service.bot_secret)
 
-    @override_settings(
-        TELEGRAM_API_BASE_URL=None,
-        TELEGRAM_BOT_SECRET="test-secret"
-    )
+    @override_settings(TELEGRAM_API_BASE_URL=None, TELEGRAM_BOT_SECRET="test-secret")
     def test_send_message_no_api_url(self):
         """Тест отправки сообщения без URL API"""
         result = self.service.send_message(self.telegram_id, self.message)
         self.assertFalse(result)
 
-    @override_settings(
-        TELEGRAM_API_BASE_URL="http://test-api.com",
-        TELEGRAM_BOT_SECRET=None
-    )
+    @override_settings(TELEGRAM_API_BASE_URL="http://test-api.com", TELEGRAM_BOT_SECRET=None)
     def test_send_message_no_secret(self):
         """Тест отправки сообщения без секрета"""
         result = self.service.send_message(self.telegram_id, self.message)
         self.assertFalse(result)
 
-    @override_settings(
-        TELEGRAM_API_BASE_URL="http://test-api.com",
-        TELEGRAM_BOT_SECRET="test-secret"
-    )
-    @patch('users.services.httpx.Client')
+    @override_settings(TELEGRAM_API_BASE_URL="http://test-api.com", TELEGRAM_BOT_SECRET="test-secret")
+    @patch("users.services.httpx.Client")
     def test_send_message_success(self, mock_client_class):
         """Тест успешной отправки сообщения"""
         # Создаем сервис с нужными настройками
-        with override_settings(
-            TELEGRAM_API_BASE_URL="http://test-api.com",
-            TELEGRAM_BOT_SECRET="test-secret"
-        ):
+        with override_settings(TELEGRAM_API_BASE_URL="http://test-api.com", TELEGRAM_BOT_SECRET="test-secret"):
             service = TelegramNotificationService()
-            
+
             # Настраиваем мок ответа
             mock_response = Mock(spec=Response)
             mock_response.status_code = 200
@@ -80,14 +64,11 @@ class TelegramNotificationServiceTests(TestCase):
                 headers={
                     "X-BOT-SECRET": "test-secret",
                     "Content-Type": "application/json",
-                }
+                },
             )
 
-    @override_settings(
-        TELEGRAM_API_BASE_URL="http://test-api.com",
-        TELEGRAM_BOT_SECRET="test-secret"
-    )
-    @patch('users.services.httpx.Client')
+    @override_settings(TELEGRAM_API_BASE_URL="http://test-api.com", TELEGRAM_BOT_SECRET="test-secret")
+    @patch("users.services.httpx.Client")
     def test_send_message_server_error(self, mock_client_class):
         """Тест отправки сообщения с ошибкой сервера"""
         # Настраиваем мок ответа с ошибкой
@@ -102,11 +83,8 @@ class TelegramNotificationServiceTests(TestCase):
 
         self.assertFalse(result)
 
-    @override_settings(
-        TELEGRAM_API_BASE_URL="http://test-api.com",
-        TELEGRAM_BOT_SECRET="test-secret"
-    )
-    @patch('users.services.httpx.Client')
+    @override_settings(TELEGRAM_API_BASE_URL="http://test-api.com", TELEGRAM_BOT_SECRET="test-secret")
+    @patch("users.services.httpx.Client")
     def test_send_message_network_error(self, mock_client_class):
         """Тест отправки сообщения с ошибкой сети"""
         # Настраиваем мок для выброса исключения сети
@@ -118,19 +96,13 @@ class TelegramNotificationServiceTests(TestCase):
 
         self.assertFalse(result)
 
-    @override_settings(
-        TELEGRAM_API_BASE_URL="http://test-api.com/",
-        TELEGRAM_BOT_SECRET="test-secret"
-    )
-    @patch('users.services.httpx.Client')
+    @override_settings(TELEGRAM_API_BASE_URL="http://test-api.com/", TELEGRAM_BOT_SECRET="test-secret")
+    @patch("users.services.httpx.Client")
     def test_send_message_url_trailing_slash(self, mock_client_class):
         """Тест правильной обработки URL с завершающим слэшем"""
-        with override_settings(
-            TELEGRAM_API_BASE_URL="http://test-api.com/",
-            TELEGRAM_BOT_SECRET="test-secret"
-        ):
+        with override_settings(TELEGRAM_API_BASE_URL="http://test-api.com/", TELEGRAM_BOT_SECRET="test-secret"):
             service = TelegramNotificationService()
-            
+
             mock_response = Mock(spec=Response)
             mock_response.status_code = 200
             mock_client = Mock()
@@ -147,7 +119,7 @@ class TelegramNotificationServiceTests(TestCase):
                 headers={
                     "X-BOT-SECRET": "test-secret",
                     "Content-Type": "application/json",
-                }
+                },
             )
 
 
@@ -158,19 +130,19 @@ class GetTelegramServiceTests(TestCase):
         """Тест, что функция возвращает один и тот же экземпляр"""
         service1 = get_telegram_service()
         service2 = get_telegram_service()
-        
+
         self.assertIs(service1, service2)
         self.assertIsInstance(service1, TelegramNotificationService)
 
-    @patch('users.services._telegram_service', None)
+    @patch("users.services._telegram_service", None)
     def test_get_telegram_service_lazy_init(self):
         """Тест ленивой инициализации сервиса"""
-        with patch('users.services.TelegramNotificationService') as mock_service_class:
+        with patch("users.services.TelegramNotificationService") as mock_service_class:
             mock_instance = Mock()
             mock_service_class.return_value = mock_instance
-            
+
             service = get_telegram_service()
-            
+
             mock_service_class.assert_called_once()
             self.assertIs(service, mock_instance)
 
@@ -178,36 +150,30 @@ class GetTelegramServiceTests(TestCase):
 class TelegramNotificationServiceLoggingTests(TestCase):
     """Тесты логирования сервиса"""
 
-    @patch('users.services.logger')
+    @patch("users.services.logger")
     def test_init_logging_warnings(self, mock_logger):
         """Тест логирования предупреждений при инициализации"""
         with override_settings(TELEGRAM_API_BASE_URL=None, TELEGRAM_BOT_SECRET=None):
             TelegramNotificationService()
-        
+
         # Проверяем, что предупреждения logged
         mock_logger.warning.assert_any_call("TELEGRAM_API_BASE_URL не настроен (например: http://127.0.0.1:8001)")
         mock_logger.warning.assert_any_call("TELEGRAM_BOT_SECRET не настроен")
 
-    @override_settings(
-        TELEGRAM_API_BASE_URL=None,
-        TELEGRAM_BOT_SECRET="test-secret"
-    )
-    @patch('users.services.logger')
+    @override_settings(TELEGRAM_API_BASE_URL=None, TELEGRAM_BOT_SECRET="test-secret")
+    @patch("users.services.logger")
     def test_send_message_no_api_url_logging(self, mock_logger):
         """Тест логирования ошибки при отсутствии URL API"""
         service = TelegramNotificationService()
         service.send_message("123", "test")
-        
+
         mock_logger.error.assert_called_with("TELEGRAM_API_BASE_URL не настроен — отправка невозможна")
 
-    @override_settings(
-        TELEGRAM_API_BASE_URL="http://test-api.com",
-        TELEGRAM_BOT_SECRET=None
-    )
-    @patch('users.services.logger')
+    @override_settings(TELEGRAM_API_BASE_URL="http://test-api.com", TELEGRAM_BOT_SECRET=None)
+    @patch("users.services.logger")
     def test_send_message_no_secret_logging(self, mock_logger):
         """Тест логирования ошибки при отсутствии секрета"""
         service = TelegramNotificationService()
         service.send_message("123", "test")
-        
+
         mock_logger.error.assert_called_with("TELEGRAM_BOT_SECRET не настроен — отправка невозможна")

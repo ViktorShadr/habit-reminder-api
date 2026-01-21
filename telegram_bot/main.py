@@ -1,6 +1,6 @@
+import asyncio
 import os
 import re
-import asyncio
 
 import httpx
 from aiogram import Bot, Dispatcher, types
