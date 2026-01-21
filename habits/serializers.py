@@ -16,6 +16,21 @@ class HabitSerializer(serializers.ModelSerializer):
     class Meta:
         model = Habit
         fields = "__all__"
+        read_only_fields = ["id", "user", "created_at", "updated_at", "last_reminder"]
+        extra_kwargs = {
+            "place": {"help_text": "Где выполняется привычка."},
+            "time": {"help_text": "Время выполнения привычки (HH:MM[:SS])."},
+            "action": {"help_text": "Действие, которое нужно выполнить."},
+            "is_pleasant": {"help_text": "Отметка, что привычка является приятной."},
+            "related_habit": {"help_text": "ID приятной привычки, которая связана с текущей."},
+            "frequency": {"help_text": "Периодичность выполнения: от 1 до 7 дней."},
+            "reward": {"help_text": "Вознаграждение за выполнение привычки."},
+            "duration": {"help_text": "Длительность выполнения в секундах (до 120)."},
+            "is_public": {"help_text": "Делать ли привычку публичной."},
+            "created_at": {"help_text": "Дата и время создания."},
+            "updated_at": {"help_text": "Дата и время последнего обновления."},
+            "last_reminder": {"help_text": "Дата и время последнего напоминания."},
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -122,3 +137,14 @@ class HabitPublicSerializer(serializers.ModelSerializer):
             "reward",
             "related_habit",
         ]
+        read_only_fields = fields
+        extra_kwargs = {
+            "place": {"help_text": "Где выполняется привычка."},
+            "time": {"help_text": "Время выполнения привычки (HH:MM[:SS])."},
+            "action": {"help_text": "Действие, которое нужно выполнить."},
+            "is_pleasant": {"help_text": "Отметка, что привычка является приятной."},
+            "frequency": {"help_text": "Периодичность выполнения: от 1 до 7 дней."},
+            "duration": {"help_text": "Длительность выполнения в секундах (до 120)."},
+            "reward": {"help_text": "Вознаграждение за выполнение привычки."},
+            "related_habit": {"help_text": "ID связанной приятной привычки."},
+        }

@@ -11,11 +11,17 @@ from users.models import TelegramLink, User
 
 
 class UserCreateSerializer(serializers.ModelSerializer):
-    password = CharField(write_only=True, required=True)
+    password = CharField(write_only=True, required=True, help_text="Пароль пользователя.")
 
     class Meta:
         model = User
         fields = ["email", "password", "phone_number", "city", "avatar"]
+        extra_kwargs = {
+            "email": {"help_text": "Email пользователя (логин)."},
+            "phone_number": {"help_text": "Телефонный номер пользователя."},
+            "city": {"help_text": "Город пользователя."},
+            "avatar": {"help_text": "Аватар пользователя."},
+        }
 
     def validate_password(self, value):
         validate_password(value)
@@ -31,12 +37,19 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ["email", "phone_number", "city", "avatar"]
+        read_only_fields = ["email"]
+        extra_kwargs = {
+            "email": {"help_text": "Email пользователя (логин)."},
+            "phone_number": {"help_text": "Телефонный номер пользователя."},
+            "city": {"help_text": "Город пользователя."},
+            "avatar": {"help_text": "Аватар пользователя."},
+        }
 
 
 class TelegramLinkCreateSerializer(serializers.Serializer):
-    code = serializers.CharField(read_only=True)
-    expires_at = serializers.DateTimeField(read_only=True)
-    start_command = serializers.CharField(read_only=True)
+    code = serializers.CharField(read_only=True, help_text="Сгенерированный код для привязки.")
+    expires_at = serializers.DateTimeField(read_only=True, help_text="Дата и время истечения кода.")
+    start_command = serializers.CharField(read_only=True, help_text="Команда для привязки в Telegram.")
 
     def create(self, validated_data):
         request = self.context["request"]
@@ -67,8 +80,8 @@ class TelegramLinkCreateSerializer(serializers.Serializer):
 
 
 class TelegramConfirmSerializer(serializers.Serializer):
-    code = serializers.CharField(max_length=32)
-    chat_id = serializers.IntegerField(min_value=1)
+    code = serializers.CharField(max_length=32, help_text="Код привязки из команды /start.")
+    chat_id = serializers.IntegerField(min_value=1, help_text="ID чата в Telegram.")
 
     def validate_code(self, value: str) -> str:
         value = value.strip().upper()
