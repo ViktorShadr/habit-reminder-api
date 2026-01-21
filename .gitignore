@@ -65,3 +65,6 @@ Thumbs.db
 # SQLite databases
 *.sqlite3
 *.db
+/celerybeat-schedule-wal
+/celerybeat-schedule-shm
+/celerybeat-schedule

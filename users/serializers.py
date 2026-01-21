@@ -7,8 +7,7 @@ from django.utils import timezone
 from rest_framework import serializers
 from rest_framework.fields import CharField
 
-from users.models import TelegramLink
-from users.models import User
+from users.models import TelegramLink, User
 
 
 class UserCreateSerializer(serializers.ModelSerializer):
@@ -79,12 +78,7 @@ class TelegramConfirmSerializer(serializers.Serializer):
         code = self.validated_data["code"]
         chat_id = self.validated_data["chat_id"]
 
-        link = (
-            TelegramLink.objects.select_for_update()
-            .select_related("user")
-            .filter(code=code)
-            .first()
-        )
+        link = TelegramLink.objects.select_for_update().select_related("user").filter(code=code).first()
 
         if not link:
             raise serializers.ValidationError({"code": "Код привязки не найден."})

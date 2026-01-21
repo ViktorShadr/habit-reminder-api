@@ -10,7 +10,7 @@ class CustomUserAdmin(UserAdmin):
     model = User
 
     # чтобы в списке пользователей было видно группы (как текст)
-    list_display = ("id", "email", "first_name", "last_name", "is_staff", "groups_list")
+    list_display = ("id", "email", "first_name", "last_name", "is_staff", "groups_list", "telegram_id")
     list_filter = ("is_staff", "is_superuser", "is_active", "groups")
     search_fields = ("email", "first_name", "last_name")
     ordering = ("email",)
@@ -20,7 +20,7 @@ class CustomUserAdmin(UserAdmin):
         (None, {"fields": ("email", "password")}),
         (
             _("Personal info"),
-            {"fields": ("first_name", "last_name", "phone_number", "city", "avatar")},
+            {"fields": ("first_name", "last_name", "phone_number", "city", "avatar", "telegram_id")},
         ),
         (
             _("Permissions"),

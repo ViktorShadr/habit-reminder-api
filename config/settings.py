@@ -139,9 +139,9 @@ CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 30 * 60
 
 CELERY_BEAT_SCHEDULE = {
-    'send-habit-reminders': {
-        'task': 'habits.tasks.send_habit_reminders',
-        'schedule': timedelta(minutes=1),  # Проверяем каждую минуту
+    "send-habit-reminders": {
+        "task": "habits.tasks.send_habit_reminders",
+        "schedule": timedelta(minutes=1),  # Проверяем каждую минуту
     },
 }
 
@@ -149,4 +149,3 @@ TELEGRAM_BOT_SECRET = os.getenv("TELEGRAM_BOT_SECRET")
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 
 TELEGRAM_API_BASE_URL = os.getenv("TELEGRAM_API_BASE_URL", "http://127.0.0.1:8001")
-

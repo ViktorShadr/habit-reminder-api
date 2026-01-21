@@ -1,4 +1,5 @@
 from rest_framework import serializers
+
 from habits.models import Habit
 
 
@@ -30,9 +31,7 @@ class HabitSerializer(serializers.ModelSerializer):
 
         is_pleasant = attrs.get("is_pleasant", getattr(instance, "is_pleasant", False))
         reward = attrs.get("reward", getattr(instance, "reward", None))
-        related_habit = attrs.get(
-            "related_habit", getattr(instance, "related_habit", None)
-        )
+        related_habit = attrs.get("related_habit", getattr(instance, "related_habit", None))
         duration = attrs.get("duration", getattr(instance, "duration", None))
         frequency = attrs.get("frequency", getattr(instance, "frequency", 1))
 
@@ -123,4 +122,3 @@ class HabitPublicSerializer(serializers.ModelSerializer):
             "reward",
             "related_habit",
         ]
-

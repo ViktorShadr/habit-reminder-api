@@ -1,7 +1,7 @@
 import os
 
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException, Header, status
+from fastapi import FastAPI, Header, HTTPException, status
 from pydantic import BaseModel
 
 from telegram_bot.main import send_notification_to_user  # поправь импорт под свою структуру
