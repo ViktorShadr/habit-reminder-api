@@ -1,7 +1,7 @@
 import asyncio
 
 import uvicorn
-from api import app as api_app
+from .api import app as api_app
 from main import bot, dp
 
 
