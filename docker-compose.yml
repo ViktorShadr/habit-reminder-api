@@ -11,8 +11,6 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres}"]
       interval: 30s
@@ -23,8 +21,6 @@ services:
   redis:
     image: redis:7-alpine
     container_name: habit_reminder_redis
-    ports:
-      - "6379:6379"
     volumes:
       - redis_data:/data
     healthcheck:
@@ -54,8 +50,6 @@ services:
     volumes:
       - static_volume:/app/staticfiles
       - media_volume:/app/media
-    ports:
-      - "8000:8000"
     depends_on:
       db:
         condition: service_healthy
@@ -132,8 +126,6 @@ services:
       - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
       - TELEGRAM_BOT_SECRET=${TELEGRAM_BOT_SECRET}
       - BACKEND_BASE_URL=http://web:8000
-    ports:
-      - "8001:8001"
     depends_on:
       - web
 
