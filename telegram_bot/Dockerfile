@@ -22,12 +22,10 @@ RUN poetry config virtualenvs.create false
 RUN poetry install --only main --no-interaction --no-ansi --no-root
 
 # Копируем код бота
-COPY telegram_bot/ /app/telegram_bot/
-COPY run_bot.py /app/run_bot.py
-COPY api.py /app/api.py
+COPY . /app
 
 # Открываем порт
 EXPOSE 8001
 
 # Команда запуска
-CMD ["python", "run_bot.py"]
+CMD ["python", "telegram_bot/run_bot.py"]
