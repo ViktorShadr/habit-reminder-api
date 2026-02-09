@@ -2,7 +2,7 @@ import asyncio
 
 import uvicorn
 from .api import app as api_app
-from main import bot, dp
+from .main import bot, dp
 
 
 async def run_bot():
