@@ -28,4 +28,5 @@ COPY . /app
 EXPOSE 8001
 
 # Команда запуска
-CMD ["python", "telegram_bot/run_bot.py"]
+CMD ["python", "-m", "telegram_bot.run_bot"]
+
