@@ -5,8 +5,16 @@ from django.test import TestCase
 from django.utils import timezone
 
 from habits.models import Habit
-from habits.services import (_get_user_telegram_id, _normalize_local_datetime, _same_minute, enqueue_due_habits,
-                             get_due_habits, is_habit_due, process_single_habit, send_telegram_notification)
+from habits.services import (
+    _get_user_telegram_id,
+    _normalize_local_datetime,
+    _same_minute,
+    enqueue_due_habits,
+    get_due_habits,
+    is_habit_due,
+    process_single_habit,
+    send_telegram_notification,
+)
 from users.models import User
 
 
