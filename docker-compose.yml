@@ -45,6 +45,8 @@ services:
       - TELEGRAM_BOT_SECRET=${TELEGRAM_BOT_SECRET}
       - TELEGRAM_API_BASE_URL=http://telegram_bot:8001
       - BACKEND_BASE_URL=http://web:8000
+      - ALLOWED_HOSTS=127.0.0.1,localhost,158.160.1.66
+
     volumes:
       - static_volume:/app/staticfiles
       - media_volume:/app/media
