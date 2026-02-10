@@ -46,6 +46,8 @@ services:
       - TELEGRAM_API_BASE_URL=http://telegram_bot:8001
       - BACKEND_BASE_URL=http://web:8000
       - ALLOWED_HOSTS=127.0.0.1,localhost,158.160.1.66
+      - FORCE_SCRIPT_NAME=/habit
+
 
     volumes:
       - static_volume:/app/staticfiles
