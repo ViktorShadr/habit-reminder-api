@@ -1,3 +1,4 @@
+import os
 from django.contrib import admin
 from django.urls import include, path
 from drf_yasg import openapi
@@ -8,6 +9,8 @@ from django.urls import set_script_prefix
 
 if getattr(settings, "FORCE_SCRIPT_NAME", None):
     set_script_prefix(settings.FORCE_SCRIPT_NAME)
+
+BASE_URL = os.getenv("PUBLIC_BASE_URL", "http://127.0.0.1")
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -20,6 +23,7 @@ schema_view = get_schema_view(
     ),
     public=True,
     permission_classes=(permissions.AllowAny,),
+    url=f"{BASE_URL}{settings.FORCE_SCRIPT_NAME}",
 )
 
 urlpatterns = [
