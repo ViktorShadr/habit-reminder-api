@@ -2,19 +2,17 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, develop, feature/deploy ]
+    branches: [ develop, main ]
   pull_request:
-    branches: [ main ]
+    branches: [ develop ]
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  # Тестирование и линтинг
   test:
     runs-on: ubuntu-latest
-    
+
     services:
       postgres:
         image: postgres:15
@@ -28,7 +26,7 @@ jobs:
           --health-retries 5
         ports:
           - 5432:5432
-      
+
       redis:
         image: redis:7
         options: >-
@@ -46,7 +44,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.12'
+          python-version: "3.12"
 
       - name: Install Poetry
         uses: snok/install-poetry@v1
@@ -71,7 +69,7 @@ jobs:
 
       - name: Run tests with coverage
         env:
-          DEBUG: False
+          DEBUG: "False"
           SECRET_KEY: test-secret-key
           DB_HOST: localhost
           DB_PORT: 5432
@@ -89,12 +87,11 @@ jobs:
           poetry run python -m coverage run --source='.' manage.py test
           poetry run python -m coverage report --include="habits/*,users/*" --omit="*/migrations/*"
 
-  # Сборка Docker образов
   build:
     needs: test
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/feature/deploy'
-    
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
     permissions:
       contents: read
       packages: write
@@ -103,12 +100,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
       - name: Set image name lowercase
         run: |
           echo "IMAGE_NAME=${GITHUB_REPOSITORY,,}" >> $GITHUB_ENV
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
       - name: Log in to Container Registry
         uses: docker/login-action@v3
@@ -117,19 +114,12 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract metadata
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-
       - name: Build and push Django image
         uses: docker/build-push-action@v5
         with:
           context: .
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-          labels: ${{ steps.meta.outputs.labels }}
 
       - name: Build and push Telegram bot image
         uses: docker/build-push-action@v5
@@ -138,13 +128,11 @@ jobs:
           file: ./telegram_bot/Dockerfile
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-telegram:latest
-          labels: ${{ steps.meta.outputs.labels }}
 
-  # Деплой на сервер
   deploy:
     needs: build
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/feature/deploy'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
       - name: Deploy to server
@@ -156,7 +144,6 @@ jobs:
           script: |
             set -e
             cd /opt/projects/habit-reminder-api
-
             docker compose pull
             docker compose up -d --remove-orphans
             docker image prune -f
