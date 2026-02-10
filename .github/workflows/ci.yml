@@ -4,7 +4,7 @@ on:
   push:
     branches: [ main, develop ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, develop ]
 
 env:
   REGISTRY: ghcr.io
@@ -40,61 +40,61 @@ jobs:
           - 6379:6379
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.13'
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.13'
 
-    - name: Install Poetry
-      uses: snok/install-poetry@v1
-      with:
-        version: latest
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: latest
 
-    - name: Install dependencies
-      run: |
-        poetry install --no-interaction --no-ansi
+      - name: Install dependencies
+        run: |
+          poetry install --no-interaction --no-ansi
 
-    - name: Lint with flake8
-      run: |
-        poetry run flake8 habits users --exclude=migrations --max-line-length=119
+      - name: Lint with flake8
+        run: |
+          poetry run flake8 habits users --exclude=migrations --max-line-length=119
 
-    - name: Check code formatting with black
-      run: |
-        poetry run black --check habits users
+      - name: Check code formatting with black
+        run: |
+          poetry run black --check habits users
 
-    - name: Check import sorting with isort
-      run: |
-        poetry run isort --check-only habits users
+      - name: Check import sorting with isort
+        run: |
+          poetry run isort --check-only habits users
 
-    - name: Run tests with coverage
-      env:
-        DEBUG: False
-        SECRET_KEY: test-secret-key
-        DB_HOST: localhost
-        DB_PORT: 5432
-        DB_NAME: test_habit_reminder
-        DB_USER: postgres
-        DB_PASSWORD: postgres
-        CELERY_BROKER_URL: redis://localhost:6379/0
-        CELERY_RESULT_BACKEND: redis://localhost:6379/0
-        TELEGRAM_BOT_TOKEN: test-token
-        TELEGRAM_BOT_SECRET: test-secret
-        TELEGRAM_API_BASE_URL: http://localhost:8001
-        BACKEND_BASE_URL: http://localhost:8000
-      run: |
-        poetry run python manage.py migrate
-        poetry run python -m coverage run --source='.' manage.py test
-        poetry run python -m coverage report --include="habits/*,users/*" --omit="*/migrations/*"
+      - name: Run tests with coverage
+        env:
+          DEBUG: False
+          SECRET_KEY: test-secret-key
+          DB_HOST: localhost
+          DB_PORT: 5432
+          DB_NAME: test_habit_reminder
+          DB_USER: postgres
+          DB_PASSWORD: postgres
+          CELERY_BROKER_URL: redis://localhost:6379/0
+          CELERY_RESULT_BACKEND: redis://localhost:6379/0
+          TELEGRAM_BOT_TOKEN: test-token
+          TELEGRAM_BOT_SECRET: test-secret
+          TELEGRAM_API_BASE_URL: http://localhost:8001
+          BACKEND_BASE_URL: http://localhost:8000
+        run: |
+          poetry run python manage.py migrate
+          poetry run python -m coverage run --source='.' manage.py test
+          poetry run python -m coverage report --include="habits/*,users/*" --omit="*/migrations/*"
 
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v3
-      with:
-        file: ./coverage.xml
-        flags: unittests
-        name: codecov-umbrella
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./coverage.xml
+          flags: unittests
+          name: codecov-umbrella
 
   # Сборка Docker образов
   build:
@@ -107,71 +107,60 @@ jobs:
       packages: write
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-    - name: Log in to Container Registry
-      uses: docker/login-action@v3
-      with:
-        registry: ${{ env.REGISTRY }}
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Extract metadata
-      id: meta
-      uses: docker/metadata-action@v5
-      with:
-        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
-    - name: Build and push Django image
-      uses: docker/build-push-action@v5
-      with:
-        context: .
-        push: true
-        tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-        labels: ${{ steps.meta.outputs.labels }}
+      - name: Build and push Django image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          labels: ${{ steps.meta.outputs.labels }}
 
-    - name: Build and push Telegram bot image
-      uses: docker/build-push-action@v5
-      with:
-        context: .
-        file: ./telegram_bot/Dockerfile
-        push: true
-        tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-telegram:latest
-        labels: ${{ steps.meta.outputs.labels }}
+      - name: Build and push Telegram bot image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./telegram_bot/Dockerfile
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-telegram:latest
+          labels: ${{ steps.meta.outputs.labels }}
 
   # Деплой на сервер
   deploy:
     needs: build
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
 
-    - name: Deploy to server
-      uses: appleboy/ssh-action@v1.0.0
-      with:
-        host: ${{ secrets.SERVER_HOST }}
-        username: ${{ secrets.SERVER_USER }}
-        key: ${{ secrets.SERVER_SSH_KEY }}
-        script: |
-          cd /opt/habit-reminder-api
-          
-          # Резервная копия текущей версии
-          docker-compose down
-          docker-compose pull
-          
-          # Запуск новой версии
-          docker-compose up -d
-          
-          # Очистка старых образов
-          docker image prune -f
-          
-          # Проверка здоровья сервисов
-          sleep 30
-          docker-compose ps
+    steps:
+      - name: Deploy to server
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            set -e
+            cd /opt/habit-reminder-api
+
+            docker compose pull
+            docker compose up -d --remove-orphans
+            docker image prune -f
+            docker compose ps
