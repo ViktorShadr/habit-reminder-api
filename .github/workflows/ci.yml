@@ -46,7 +46,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.13'
+          python-version: '3.12'
 
       - name: Install Poetry
         uses: snok/install-poetry@v1
@@ -88,13 +88,6 @@ jobs:
           poetry run python manage.py migrate
           poetry run python -m coverage run --source='.' manage.py test
           poetry run python -m coverage report --include="habits/*,users/*" --omit="*/migrations/*"
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          file: ./coverage.xml
-          flags: unittests
-          name: codecov-umbrella
 
   # Сборка Docker образов
   build:

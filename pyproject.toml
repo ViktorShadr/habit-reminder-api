@@ -1,37 +1,32 @@
-[project]
+[tool.poetry]
 name = "habit-reminder-api"
 version = "0.1.0"
 description = ""
-authors = [
-    {name = "Viktor Shadrin",email = "v.viktor.shadrin@gmail.com"}
-]
+authors = ["Viktor Shadrin <v.viktor.shadrin@gmail.com>"]
 readme = "README.md"
-requires-python = ">=3.13,<3.15"
-dependencies = [
-    "django (==5.2)",
-    "psycopg2-binary (>=2.9.11,<3.0.0)",
-    "djangorestframework (>=3.16.1,<4.0.0)",
-    "dotenv (>=0.9.9,<0.10.0)",
-    "pillow (>=12.1.0,<13.0.0)",
-    "djangorestframework-simplejwt (>=5.5.1,<6.0.0)",
-    "djangorestframework-stubs (>=3.16.7,<4.0.0)",
-    "django-filter (>=25.2,<26.0)",
-    "drf-yasg (>=1.21.14,<2.0.0)",
-    "django-cors-headers (>=4.9.0,<5.0.0)",
-    "celery (>=5.6.2,<6.0.0)",
-    "redis (>=7.1.0,<8.0.0)",
-    "aiogram (>=3.24.0,<4.0.0)",
-    "httpx (>=0.28.1,<0.29.0)",
-    "fastapi (>=0.115.0,<0.116.0)",
-    "uvicorn (>=0.32.0,<0.33.0)",
-    "coverage (>=7.13.1,<8.0.0)",
-    "gunicorn (>=25.0.3,<26.0.0)"
-]
 
+package-mode = false
 
-[build-system]
-requires = ["poetry-core>=2.0.0,<3.0.0"]
-build-backend = "poetry.core.masonry.api"
+[tool.poetry.dependencies]
+python = ">=3.13,<3.15"
+django = "5.2"
+psycopg2-binary = "^2.9.11"
+djangorestframework = "^3.16.1"
+python-dotenv = "^1.0.1"
+pillow = "^12.1.0"
+djangorestframework-simplejwt = "^5.5.1"
+djangorestframework-stubs = "^3.16.7"
+django-filter = "^25.2"
+drf-yasg = "^1.21.14"
+django-cors-headers = "^4.9.0"
+celery = "^5.6.2"
+redis = "^7.1.0"
+aiogram = "^3.24.0"
+httpx = "^0.28.1"
+fastapi = "^0.115.0"
+uvicorn = "^0.32.0"
+coverage = "^7.13.1"
+gunicorn = "^25.0.3"
 
 [tool.poetry.group.dev.dependencies]
 black = "^26.1.0"
@@ -52,3 +47,7 @@ exclude = '''
 
 [tool.isort]
 line_length = 119
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

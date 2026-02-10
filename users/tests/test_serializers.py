@@ -6,12 +6,8 @@ from django.utils import timezone
 from rest_framework import serializers
 
 from users.models import TelegramLink, User
-from users.serializers import (
-    TelegramConfirmSerializer,
-    TelegramLinkCreateSerializer,
-    UserCreateSerializer,
-    UserSerializer,
-)
+from users.serializers import (TelegramConfirmSerializer, TelegramLinkCreateSerializer, UserCreateSerializer,
+                               UserSerializer)
 
 
 class UserCreateSerializerTest(TestCase):
