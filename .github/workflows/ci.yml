@@ -93,7 +93,7 @@ jobs:
   build:
     needs: test
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/deploy'
+    if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/feature/deploy'
     
     permissions:
       contents: read
@@ -140,7 +140,7 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/deploy'
+    if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/feature/deploy'
 
     steps:
       - name: Deploy to server
