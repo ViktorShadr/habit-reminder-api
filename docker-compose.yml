@@ -29,7 +29,7 @@ services:
 
   # Django приложение
   web:
-    build: .
+    image: ghcr.io/viktorshadr/habit-reminder-api:latest
     container_name: habit_reminder_web
     environment:
       - DEBUG=${DEBUG:-False}
@@ -68,7 +68,7 @@ services:
 
   # Celery Worker
   celery_worker:
-    build: .
+    image: ghcr.io/viktorshadr/habit-reminder-api:latest
     container_name: habit_reminder_celery_worker
     environment:
       - DEBUG=${DEBUG:-False}
@@ -95,7 +95,7 @@ services:
 
   # Celery Beat
   celery_beat:
-    build: .
+    image: ghcr.io/viktorshadr/habit-reminder-api:latest
     container_name: habit_reminder_celery_beat
     environment:
       - DEBUG=${DEBUG:-False}
@@ -124,9 +124,7 @@ services:
 
   # Telegram бот
   telegram_bot:
-    build:
-      context: .
-      dockerfile: telegram_bot/Dockerfile
+    image: ghcr.io/viktorshadr/habit-reminder-api-telegram:latest
     container_name: habit_reminder_telegram_bot
     environment:
       - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
