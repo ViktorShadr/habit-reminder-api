@@ -155,7 +155,7 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
             set -e
-            cd /opt/habit-reminder-api
+            cd /opt/projects/habit-reminder-api
 
             docker compose pull
             docker compose up -d --remove-orphans
