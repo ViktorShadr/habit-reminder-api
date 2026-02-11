@@ -87,8 +87,34 @@ jobs:
           poetry run python -m coverage run --source='.' manage.py test
           poetry run python -m coverage report --include="habits/*,users/*" --omit="*/migrations/*"
 
-  build:
+  docker-build-check:
     needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Django image (without push)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: false
+          tags: habit-reminder-api:test
+
+      - name: Build Telegram bot image (without push)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./telegram_bot/Dockerfile
+          push: false
+          tags: habit-reminder-api-telegram:test
+
+  build:
+    needs: [test, docker-build-check]
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
