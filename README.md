@@ -152,7 +152,7 @@ poetry run celery -A config beat --loglevel=info
 #### Запуск Telegram бота (в отдельном терминале)
 ```bash
 cd telegram_bot
-poetry run python run_bot.py
+poetry run python -m telegram_bot.run_bot
 ```
 
 ## 📚 Документация API
