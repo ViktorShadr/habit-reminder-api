@@ -10,7 +10,10 @@ from rest_framework import permissions
 if getattr(settings, "FORCE_SCRIPT_NAME", None):
     set_script_prefix(settings.FORCE_SCRIPT_NAME)
 
-BASE_URL = os.getenv("PUBLIC_BASE_URL", "http://127.0.0.1")
+if os.getenv("DEBUG", "False").lower() in {"true", "1", "yes"}:
+    BASE_URL = "http://127.0.0.1:8080"  # Для локальной разработки
+else:
+    BASE_URL = os.getenv("PUBLIC_BASE_URL", "http://127.0.0.1")
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -23,7 +26,7 @@ schema_view = get_schema_view(
     ),
     public=True,
     permission_classes=(permissions.AllowAny,),
-    url=f"{BASE_URL}{settings.FORCE_SCRIPT_NAME}",
+    url=BASE_URL,  # Только базовый URL, без FORCE_SCRIPT_NAME
 )
 
 urlpatterns = [
