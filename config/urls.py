@@ -26,7 +26,6 @@ schema_view = get_schema_view(
     ),
     public=True,
     permission_classes=(permissions.AllowAny,),
-    url=BASE_URL,  # Только базовый URL, без FORCE_SCRIPT_NAME
 )
 
 urlpatterns = [

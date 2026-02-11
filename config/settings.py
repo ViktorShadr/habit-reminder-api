@@ -163,5 +163,6 @@ TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 
 TELEGRAM_API_BASE_URL = os.getenv("TELEGRAM_API_BASE_URL", "http://127.0.0.1:8001")
 
-FORCE_SCRIPT_NAME = "/habit"
-USE_X_FORWARDED_HOST = True
+if not env_bool("DEBUG", True):
+    FORCE_SCRIPT_NAME = "/habit"
+    USE_X_FORWARDED_HOST = True
