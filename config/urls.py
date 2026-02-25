@@ -1,8 +1,19 @@
+import os
+
+from django.conf import settings
 from django.contrib import admin
-from django.urls import include, path
+from django.urls import include, path, set_script_prefix
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
+
+if getattr(settings, "FORCE_SCRIPT_NAME", None):
+    set_script_prefix(settings.FORCE_SCRIPT_NAME)
+
+if os.getenv("DEBUG", "False").lower() in {"true", "1", "yes"}:
+    BASE_URL = "http://127.0.0.1:8080"  # Для локальной разработки
+else:
+    BASE_URL = os.getenv("PUBLIC_BASE_URL", "http://127.0.0.1")
 
 schema_view = get_schema_view(
     openapi.Info(
