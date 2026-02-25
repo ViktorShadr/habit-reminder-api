@@ -133,6 +133,7 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = "static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
@@ -161,3 +162,7 @@ TELEGRAM_BOT_SECRET = os.getenv("TELEGRAM_BOT_SECRET")
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 
 TELEGRAM_API_BASE_URL = os.getenv("TELEGRAM_API_BASE_URL", "http://127.0.0.1:8001")
+
+if not env_bool("DEBUG", True):
+    FORCE_SCRIPT_NAME = "/habit"
+    USE_X_FORWARDED_HOST = True

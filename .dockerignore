@@ -1,0 +1,62 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+env
+pip-log.txt
+pip-delete-this-directory.txt
+.venv
+.env
+
+*.lock
+!poetry.lock
+
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Database
+*.db
+*.sqlite3
+
+# Logs
+logs
+*.log
+
+# Coverage
+.coverage
+htmlcov/
+coverage.xml
+
+# Tests
+.pytest_cache
+
+# Docker
+Dockerfile*
+docker-compose*
+.dockerignore
+
+# Scripts
+scripts/
+
+# Documentation
+README.md
+POSTMAN_TESTING.md
+
+# Temporary files
+*.tmp
+*.temp
